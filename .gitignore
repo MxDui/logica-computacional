@@ -1,0 +1,78 @@
+# Ignore the build directories
+dist/
+dist-newstyle/
+.stack-work/
+
+# Ignore Cabal files
+*.cabal~
+*.hi
+*.o
+*.dyn_o
+*.dyn_hi
+*.prof
+*.aux
+*.hp
+*.chi
+*.chs.h
+*.chi.h
+*.dump-* 
+*.so
+*.p_hi
+*.p_o
+*.p_dylib
+*.jsexe
+*.js_p
+*.js_dyn_o
+*.jsexe_cache
+*.haddock
+*.dyn_jsexe
+*.o-boot
+*.hi-boot
+*.prof-boot
+*.hie-boot
+
+# Ignore Stack-related files
+.stack-work/
+.stack-work-install/
+.stack-work-docker/
+
+# Ignore Hoogle files
+.hoogle/
+
+# Ignore Nix build files
+.result/
+.nix-*
+result/
+
+# Ignore IDE/Editor-related files
+/.idea/
+/*.swp
+/.vscode/
+/*.sublime-workspace
+*.tags
+*.tag
+*.hprof
+*.sqlite3
+*.DB
+
+# Ignore Cabal sandbox
+cabal.sandbox.config
+.sandbox/
+.sandbox/*
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore binary files
+*.exe
+*.out
+*.bin
+
+# Ignore log files
+*.log
+*.aux
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
