@@ -68,7 +68,13 @@ timeToWork h = let dist = fromO (location h)
 
 -- Ejercicio 1: Implementación de la función isPal
 isPal :: String -> Bool
-isPal s = s == reverse s
+isPal s = eliminaEspacios s == reverse (eliminaEspacios s)
+
+-- función auxiliar para eliminar espacios de un string y poder comparar palíndromos
+-- como la frase "anita lava la tina"
+eliminaEspacios :: String -> String
+eliminaEspacios [] = []
+eliminaEspacios (x:xs) = if x == ' ' then eliminaEspacios xs else x : eliminaEspacios xs
 
 -- Ejercicio 2: Implementación de la función concat'
 concat' :: [[a]] -> [a]
