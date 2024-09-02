@@ -1,4 +1,4 @@
-
+module Practica02 where
 -- 3.1 Sintaxis de la logica proposicional
 
 data Prop = Var String | Cons Bool | Not Prop
@@ -84,6 +84,8 @@ posiblesInterp :: Prop -> [Estado]
 posiblesInterp prop = conjPotencia (variables prop)
 
 --Ejercicio 9: Definir la funcion esValida que verifica si una formula proposicional es valida o no.
+esValida :: Prop -> Bool
+esValida prop = tautologia prop
 
 --Ejercicio 10: Definir la funcion esInsatisfacible verifica si una formula proposicional es insatisfacible.
 esInsatisfacible :: Prop -> Bool
