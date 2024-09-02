@@ -63,15 +63,32 @@ estadosPosibles :: Prop -> [[String]]
 estadosPosibles p = [[x | x <- xs] | xs <- conjPotencia (variables p), (interpretacion p xs) == True]
 
 --Ejercicio 5: Definir la funcion tautologia que nos diga si es una tautologia.
+tautologia :: Prop -> Bool
+tautologia p = modelos p == posiblesInterp p
 
 --Ejercicio 6: Definir la funcion contradiccion que nos diga si es una contradiccion.
+contradiccion :: Prop -> Bool
+contradiccion = esInsatisfacible
 
 --Ejercicio 7: Definir la funcion esModelo que verifique si una interpretacion es un modelo.
+esModelo :: Prop -> Estado -> Bool
+esModelo prop est = interpretacion prop est
 
 --Ejercicio 8: Definir la funcion modelos que devuelve la lista de todos sus modelos.
+modelos :: Prop -> [Estado]
+modelos prop = [q | q <- posiblesInterp prop, esModelo prop q]
+
+-- Funcion auxiliar que da TODAS las posibles interpretaciones que podria tomar
+-- una formula.
+posiblesInterp :: Prop -> [Estado]
+posiblesInterp prop = conjPotencia (variables prop)
 
 --Ejercicio 9: Definir la funcion esValida que verifica si una formula proposicional es valida o no.
 
 --Ejercicio 10: Definir la funcion esInsatisfacible verifica si una formula proposicional es insatisfacible.
+esInsatisfacible :: Prop -> Bool
+esInsatisfacible prop = not (esSatisfacible prop)
 
 --Ejercicio 11: Definir la funcion esSatisfacible verifica si una formula proposicional es satisfacible.
+esSatisfacible :: Prop -> Bool
+esSatisfacible prop = modelos prop /= []
