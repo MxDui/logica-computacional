@@ -1,5 +1,6 @@
 import Data.Set (Set)
 import qualified Data.Set as Set
+import Data.List (nub)
 -- 4.1 logica proposicional
 
 data Prop = Var String | Cons Bool | Not Prop
@@ -89,31 +90,19 @@ clausula :: Prop -> Clausula
 clausula (Var p) = [Var p]
 clausula (Cons p) = [Cons p]
 clausula (Not (Var p)) = [Not (Var p)]
-clausula (Or p q) = eliminarDuplicados (clausula p ++ clausula q)
+clausula (Or p q) = eliminarDuplicadosLiteral (clausula p ++ clausula q)
 
 -- Ejercicio 4: Definir la funcion resolucion que dadas dos clausulas, devuelve el resolvente obtenido despues de aplicar la
 -- regla de resolucion binaria. Se puede asumir que se puede obtener un resolvente a partir de los argumentos.
 resolucion :: Clausula -> Clausula -> Clausula
-resolucion [(Var p)] [(Not (Var q))] = if p == q then [(Var "Clausula vacia")] else []
-resolucion xs ys = eliminarDuplicados (resolucionAux xs ys)
-
-resolucionAux :: Clausula -> Clausula -> Clausula
-resolucionAux [] ys = ys
-resolucionAux ((Var p):xs) ys = if (Not (Var p)) `elem` ys
-                                then xs ++ (elimina ((Not (Var p))) ys)
-                                else [Var p] ++ resolucionAux xs ys
-resolucionAux ((Not (Var p)):xs) ys = if (Var p) `elem` ys
-                                      then xs ++ (elimina (Var p) ys)
-                                      else [(Not (Var p))] ++ resolucionAux xs ys
-
-elimina :: (Eq a) => a -> [a] -> [a]
-elimina _ [] = []
-elimina y (x:xs) = if y == x then xs else [x] ++ (elimina y xs)
-
-eliminarDuplicados :: (Eq a) => [a] -> [a]
-eliminarDuplicados [] = []
-eliminarDuplicados (x:xs) = x : eliminarDuplicados(filter (/= x) xs)
-
+resolucion c1 c2 
+  | null resolvent = []  -- Empty clause
+  | otherwise = resolvent
+  where
+    resolvent = [l | l <- c1 ++ c2, not (complementary l `elem` c2) && not (complementary l `elem` c1)]
+    complementary (Not (Var p)) = Var p
+    complementary (Var p) = Not (Var p)
+    complementary l = l
 
 -- 4.4 Algoritmo de saturacion
 
@@ -130,19 +119,19 @@ hayResolvente (x:xs) (ys) = let resultado = hayResolvente [x] ys
                               else (hayResolvente xs ys)
 -}
 
---Ejercicio 2: Definir la funcion saturacion, que dada una formula proposicional, determina si esta es satisfacible o no 
+--Ejercicio 2: Definir la funcion saturacion que dada una formula proposicional, determina si esta es satisfacible o no 
 --usando el algoritmo de saturacion.
 saturacion :: Prop -> Bool
-saturacion p = saturacionC (clausulas (fnc p))
+saturacion p = not (saturacionC (clausulas (fnc p)))
 
 saturacionC :: [Clausula] -> Bool
-saturacionC clausulas = let lista = listaResolventes clausulas
-                        in
-                        case () of 
-                         _ | ([(Var "Clausula vacia")] `elem` lista) -> True
-                           | (igualdad clausulas lista) -> False
-                           | otherwise -> (saturacionC lista)
-
+saturacionC clausulas = aux clausulas
+  where
+    aux cls
+      | [] `elem` cls = True  -- Empty clause found, formula is unsatisfiable
+      | newCls == cls = False  -- No new clauses generated, formula is satisfiable
+      | otherwise = aux newCls
+      where newCls = nub (cls ++ [resolucion c1 c2 | c1 <- cls, c2 <- cls, c1 /= c2, hayResolvente c1 c2])
 
 igualdad :: [Clausula] -> [Clausula] -> Bool
 igualdad xs ys = ((Set.fromList (xs)) `Set.isSubsetOf`(Set.fromList (ys))) && ((Set.fromList (ys)) `Set.isSubsetOf` (Set.fromList (xs)))
@@ -150,8 +139,7 @@ igualdad xs ys = ((Set.fromList (xs)) `Set.isSubsetOf`(Set.fromList (ys))) && ((
 listaResolventes :: [Clausula] -> [Clausula]
 listaResolventes [] = []
 listaResolventes [clausula] = [clausula]
-listaResolventes (x:xs) =  eliminarDuplicados ((xs) ++ (listaResolvente x xs) ++ [x])
-
+listaResolventes (x:xs) = eliminarDuplicadosClausula (xs ++ listaResolvente x xs ++ [x])
 
 listaResolvente :: Clausula -> [Clausula] -> [Clausula]
 listaResolvente clausulas [] = []
@@ -195,3 +183,12 @@ prueba = do
      if (igualdad clausulas lista)
      then putStrLn $ "Son iguales"
      else putStrLn $ "no son iguales"
+
+main :: IO ()
+main = prueba
+
+eliminarDuplicadosLiteral :: [Literal] -> Clausula
+eliminarDuplicadosLiteral = nub
+
+eliminarDuplicadosClausula :: [Clausula] -> [Clausula]
+eliminarDuplicadosClausula = nub
