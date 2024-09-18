@@ -1,3 +1,6 @@
+module Practica03 where
+
+
 import Data.List (nub)
 -- 4.1 logica proposicional
 
